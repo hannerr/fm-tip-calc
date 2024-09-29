@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tip Calculator</title>
+  <style>
+    :root {
+      --small: 0.5rem;
+      --normal: 0.8rem;
+      --medium: 1rem;
+      --strong-cyan: hsl(172, 67%, 45%);
+      --dark-cyan: hsl(183, 100%, 15%);
+      --darker-grayish-cyan: hsl(186, 14%, 43%);
+      --grayish-cyan: hsl(184, 14%, 56%);
+      --light-grayish-cyan: hsl(185, 41%, 84%);
+      --very-light-grayish-cyan: hsl(189, 41%, 97%);
+      --white: hsl(0, 0%, 100%);
+    }
+    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@;0,700;1,700&display=swap');
+
+    html { 
+        font-size: 100%;
+    } 
+    body {
+      font-family: "Space Mono", monospace;
+      font-weight: 700;
+      font-style: normal;
+      display: grid;
+      height: 100vh;
+      margin: 0;
+      background-color: var(--light-grayish-cyan);
+      
+    }
+    body > div {
+      margin: auto;
+      display: flex;
+      flex-flow: column;
+      width: 375px;
+    }
+    body > div img {
+      margin: 2rem auto;
+    }
+    form {
+      display: grid;
+      grid-template-columns: 1fr;
+      padding: 1.5rem;
+      border-radius: 1rem 1rem 0 0;
+      background-color: var(--white);
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1, .headline {
+      font-size: var(--normal);
+      color: var(--grayish-cyan);
+      margin: 0 0 0.5rem 0;
+    }
+    .headline {
+      display: flex;
+      flex-flow: row;
+      justify-content: space-between;
+    }
+    ul {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 0.5rem;
+      padding: 0;
+    }
+    button {
+      background-color: var(--dark-cyan);
+      color: var(--white);
+      border-radius: 0.3rem;
+      border: none;
+      padding: 0.5rem 0;
+      width: 100%;
+      font-size: var(--medium);
+      font-family: "Space Mono", monospace;
+    }
+    li:last-child button {
+      background-color: var(--very-light-grayish-cyan);
+      color: var(--darker-grayish-cyan);
+      font-weight: 700;
+    }
+    li button:hover, li button.active, .reset {
+      background-color: var(--strong-cyan);
+      color: var(--dark-cyan);
+      cursor: pointer;
+      font-weight: 700;
+    }
+    .reset:hover {
+      background-color: var(--light-grayish-cyan);
+    }
+    input {
+      padding: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
+      background-color: var(--very-light-grayish-cyan);
+      font-family: "Space Mono", monospace;
+      font-size: var(--medium);
+      font-weight: 700;
+      text-align: right;
+      border: none;
+      border-radius: 0.3rem;
+    }
+    input::placeholder {
+      color: var(--dark-cyan);
+    }
+    input:focus {
+      border: 1px solid var(--strong-cyan);
+      outline: none;
+    }
+    /* remove the arrows in number field in Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    /* remove the arrows in number field Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+    .d-none {
+      display: none;
+    }
+    .error {
+      margin: 0;
+      color: red;
+    }
+    .error-border {
+      border: 1px solid red;
+    }
+    .bill {
+      background-image: url('images/icon-dollar.svg');
+      background-size: 11px 17px;
+      background-repeat: no-repeat;
+      height: 17px;
+      width: 11px;
+      z-index: 1;
+      position: absolute;
+      margin: 0.8rem;
+    }
+    .people {
+      background-image: url('images/icon-person.svg');
+      background-size: 13px 16px;
+      background-repeat: no-repeat;
+      height: 16px;
+      width: 13px;
+      z-index: 1;
+      position: absolute;
+      margin: 0.8rem;
+    }
+    .result {
+      background-color: var(--dark-cyan);
+      color: var(--white);
+      border-radius: 0.6rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      p {
+        display: flex;
+        justify-content: space-between;
+      }
+      span:first-child {
+        font-size: var(--normal);
+      }
+      .small {
+        font-size: var(--small);
+        color: var(--grayish-cyan);
+      }
+      .big {
+        width: 1rem;
+        font-size: var(--medium);
+        color: var(--strong-cyan);
+        width: 100%;
+        text-align: right;
+      }
+    }
+    @media (min-width: 375px) {
+      body > div img {
+        margin: 0 auto 3rem auto;
+      }
+      form {
+        border-radius: 1rem;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 2rem;
+      }
+      body > div {
+        width: unset;
+      }
+      ul {
+      grid-template-columns: 1fr 1fr 1fr;
+      }
+      .result {
+        margin-top: unset;
+        display: flex;
+        flex-flow: column;
+        justify-content: space-between;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <div>
+    <img src="images/logo.svg">
+    <form>
+      <div>
+        <h1>Bill</h1>
+        <span class="bill"></span>
+        <input type="number" id="bill-total" placeholder="0">
+        <input type="hidden" id="bill-value" name="bill-value">
+        <p class="headline">Select tip %</p>
+        <ul class="size-list" id="tip-list">
+          <li>
+            <button type="button" id="five" value="5">5%</button>
+          </li>
+          <li>
+            <button type="button" id="ten" value="10">10%</button>
+          </li>
+          <li>
+            <button type="button" id="fifteen" value="15">15%</button>
+          </li>
+          <li>
+            <button type="button" id="twenty-five" value="25">25%</button>
+          </li>
+          <li>
+            <button type="button" id="fifty" value="50">50%</button>
+          </li>
+          <li>
+            <button type="button" id="custom" value="custom">Custom</button>
+          </li>
+        </ul>
+        <input type="hidden" id="tip-value" name="tip-value">
+        <p class="headline">Number of people<span class="headline error d-none">Can`t be zero</span></p>
+        <span class="people"></span>
+        <!-- onkeydown="return event.keyCode != 13;" prevents the reset button to be activated on pressing enter to prevent the form being cleared-->
+        <input type="number" id="number-of-people" placeholder="0" onkeydown="return event.keyCode != 13;">
+        <input type="hidden" id="number-of-people-hidden" name="number-of-people">
+      </div>
+      <div class="result">
+        <div>
+          <p><span>Tip Amount<br><span class="small">/ person</span></span><span class="big" id="total-tip">$0.00</span></p>
+          <p><span>Total<br><span class="small">/ person</span></span><span class="big" id="total-amount">$0.00</span></p>
+        </div>
+        <button class="reset">RESET</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function calculateValues(billTotal, tipPercentage, numberOfPeople) {
+      const totalTip = (billTotal * (tipPercentage / 100)) / numberOfPeople;
+      const totalAmount = (billTotal / numberOfPeople) + totalTip;
+      document.getElementById('total-tip').textContent = `$${totalTip.toFixed(2)}`;
+      document.getElementById('total-amount').textContent = `$${totalAmount.toFixed(2)}`;
+    }
+
+    function getValues() {
+      const billTotal = parseFloat(document.getElementById('bill-value').value) || 0;
+      const tipPercentage = parseFloat(document.getElementById('tip-value').value) || 0;
+      const numberOfPeople = parseInt(document.getElementById('number-of-people-hidden').value) || 1;
+      calculateValues(billTotal, tipPercentage, numberOfPeople);
+    }
+
+    function updateValues(evt) {
+      const target = evt.target;
+      const id = target.id;
+      const value = target.value;
+
+      if (id === 'bill-total') {
+        document.getElementById('bill-value').value = value;
+      } else if (id === 'number-of-people') {
+        document.getElementById('number-of-people-hidden').value = value;
+      } else if (target.tagName === 'BUTTON') {
+        if (id === 'custom') {
+          target.contentEditable = true;
+          target.focus();
+          target.addEventListener('blur', () => {
+            const customValue = parseFloat(target.textContent) || 0;
+            document.getElementById('tip-value').value = customValue;
+            getValues();
+          }, { once: true });
+        } else {
+          document.getElementById('tip-value').value = value;
+        }
+      }
+      getValues();
+    }
+
+    document.getElementById('bill-total').addEventListener('keyup', updateValues);
+    document.getElementById('tip-list').addEventListener('click', evt => {
+      if (evt.target.tagName === 'BUTTON') { 
+        document.querySelectorAll('#tip-list button').forEach(button => {
+        button.classList.remove('active');
+      });
+      evt.target.classList.add('active');
+       updateValues(evt);
+      }
+    });
+    document.getElementById('number-of-people').addEventListener('keyup', evt => {
+      if (evt.target.value === "" || evt.target.value < 1) {
+        document.getElementsByClassName('error')[0].classList.remove('d-none');
+        document.getElementById('number-of-people').classList.add('error-border');
+      } else {
+        document.getElementsByClassName('error')[0].classList.add('d-none');
+        document.getElementById('number-of-people').classList.remove('error-border');
+      }
+      updateValues(evt);
+    });
+    document.getElementsByClassName('reset').addEventListener('click', evt => {
+      document.getElementById('bill-total').value = "";
+      document.getElementById('number-of-people').value = "";
+      document.getElementById('bill-value').value = "";
+      document.getElementById('number-of-people-hidden').value = "";
+      document.getElementById('tip-value').value = "";
+      document.getElementsByClassName('error')[0].classList.add('d-none');
+      document.getElementById('number-of-people').classList.remove('error-border');
+    });
+  </script>
+</body>
+</html>
